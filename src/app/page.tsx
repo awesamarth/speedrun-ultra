@@ -105,6 +105,10 @@ async function Results({ searchParams }: { searchParams: SP }) {
   ]);
   const r = pages[0];
   const hits = pages.flatMap((page) => page.hits);
+  // keyword searches: also show matching roles that aren't open to this profile, with the reason
+  const hidden = (["eligible", "unclear", "not_eligible"] as const).filter((v) => !opts.verdicts?.includes(v));
+  const others = opts.q && hidden.some((v) => r.counts[v] > 0)
+    ? (await search(profile, { ...opts, verdicts: [...hidden], page: 0, limit: 20 })) : null;
   const cname = COUNTRY_NAME[profile.country] ?? profile.country;
   const rf = s.remote_for;
   const expandHref = (count: number) => {
@@ -129,7 +133,9 @@ async function Results({ searchParams }: { searchParams: SP }) {
         <div className="filter-counts"><span className="text-eligible">{r.counts.eligible} eligible</span><span className="text-unclear">{r.counts.unclear} unclear</span><span className="text-ineligible">{r.counts.not_eligible} not eligible</span></div>
         <span className="results-showing">showing {hits.length ? 1 : 0}–{hits.length} of {r.total}</span>
       </div>
-      {hits.length === 0 ? <p className="empty-state">No roles match. Try including unclear roles, unticking remote only, or clearing keywords.</p> : (
+      {hits.length === 0 ? <p className="empty-state">{others?.total
+        ? <>No role matching &ldquo;{opts.q}&rdquo; is open to you. Here&apos;s why the matching ones aren&apos;t.</>
+        : "No roles match. Try including unclear roles, unticking remote only, or clearing keywords."}</p> : (
         <ol className="results-list">{hits.map((h) => <ResultCard key={h.job.id} h={hitOut(h)} />)}</ol>
       )}
       {(hits.length > 20 || (hits.length < r.total && n < 200)) && <div className="results-actions">
@@ -137,7 +143,12 @@ async function Results({ searchParams }: { searchParams: SP }) {
         {hits.length > 20 && <Link href={expandHref(20)} scroll={false} className="button button-secondary">Collapse <span aria-hidden="true">↑</span></Link>}
         <span className="muted text-xs">{hits.length} of {r.total} roles</span>
       </div>}
-      <Link href="/health" className="health-teaser"><span><b>{s.health.hidden_restriction ?? 0}</b> roles say &ldquo;Remote&rdquo; but restrict the country in the JD</span><span>Data health →</span></Link>
+      {others && others.total > 0 && <div className="other-matches">
+        <h3 className="eyebrow">Also matching &ldquo;{opts.q}&rdquo;, not open to you ({others.total})</h3>
+        <ol className="results-list">{others.hits.map((h) => <ResultCard key={h.job.id} h={hitOut(h)} />)}</ol>
+        {others.total > others.hits.length && <p className="muted text-xs">Showing {others.hits.length} of {others.total}. Narrow the keywords to see the rest.</p>}
+      </div>}
+            <Link href="/health" className="health-teaser"><span><b>{s.health.hidden_restriction ?? 0}</b> roles say &ldquo;Remote&rdquo; but restrict the country in the JD</span><span>Data health →</span></Link>
     </section>
   );
 }

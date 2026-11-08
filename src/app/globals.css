@@ -292,3 +292,6 @@ a, button { transition: background-color .15s, color .15s, border-color .15s; }
   .accuracy-table code { font-size: 9px; overflow-wrap: anywhere; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+
+.other-matches { margin-top: 28px; }
+.other-matches > .eyebrow { margin-bottom: 12px; color: #65615b; }
