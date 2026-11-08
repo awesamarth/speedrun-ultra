@@ -53,5 +53,5 @@ next-env.d.ts
 *.sqlite
 *.db
 
-# agent brief stays private while developing (public version gets written before first push)
-/AGENTS.md
+# OpenNext / cf CLI build output
+.cloudflare/

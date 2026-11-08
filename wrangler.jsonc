@@ -1,0 +1,30 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"main": ".open-next/worker.js",
+	"name": "speedrun-ultra",
+	"compatibility_date": "2026-11-03",
+	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"services": [
+		{
+			// Self-reference service binding, the service name must match the worker name
+			// see https://opennext.js.org/cloudflare/caching
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "speedrun-ultra"
+		}
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "speedrun-ultra",
+			"database_id": "87b009e1-e313-4a60-afb7-9be312f16fe7",
+			"migrations_dir": "migrations"
+		}
+	],
+	// Custom Domain: Cloudflare creates the DNS record + certificate on deploy
+	"routes": [{ "pattern": "speedrun-ultra.awesamarth.dev", "custom_domain": true }],
+	"observability": { "enabled": true }
+}

@@ -1,0 +1,71 @@
+{
+ "n": 50,
+ "fields": [
+  {
+   "field": "where you can work",
+   "support": 47,
+   "precision": 1,
+   "recall": 0.9361702127659575
+  },
+  {
+   "field": "visa sponsorship",
+   "support": 6,
+   "precision": 1,
+   "recall": 1
+  },
+  {
+   "field": "relocation help",
+   "support": 1,
+   "precision": 1,
+   "recall": 1
+  },
+  {
+   "field": "citizenship / clearance / ITAR",
+   "support": 7,
+   "precision": 1,
+   "recall": 0.7142857142857143
+  },
+  {
+   "field": "min years",
+   "support": 31,
+   "precision": 1,
+   "recall": 1
+  },
+  {
+   "field": "max years",
+   "support": 4,
+   "precision": 1,
+   "recall": 1
+  },
+  {
+   "field": "onsite days / week",
+   "support": 8,
+   "precision": 1,
+   "recall": 0.75
+  },
+  {
+   "field": "timezone requirement",
+   "support": 5,
+   "precision": 1,
+   "recall": 1
+  },
+  {
+   "field": "pay in text",
+   "support": 19,
+   "precision": 1,
+   "recall": 1
+  }
+ ],
+ "verdict": {
+  "eligible_precision": 1,
+  "eligible_recall": 0.8611111111111112,
+  "false_eligible": 0,
+  "eligible_verdicts": 31,
+  "profiles": [
+   "India, open to relocating with a visa, 3y",
+   "India, not relocating, 3y",
+   "US citizen, 5y",
+   "Germany, open to relocating with a visa, 6y"
+  ]
+ }
+}
