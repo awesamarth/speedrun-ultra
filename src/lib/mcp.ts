@@ -13,7 +13,7 @@ Rules:
 5. For skills/fit questions, read the full posting from the result's full_description link (the board's own API) instead of guessing.
 6. Never apply to jobs or fill application forms on the user's behalf. Give them the link.
 7. Extraction is automated (regex + LLM, quotes verified against the text) and can be wrong. Suggest the user confirm on the posting.
-Filters: show (remote/office/both), level, min_salary (annual USD; non-USD converted approximately), q, function. Pages start at 0: pass next_page from the previous response; has_more=false means you have everything. Use check_job for full field-by-field evidence on one role.`;
+Filters: show (remote/office/both), level, min_salary (annual USD; non-USD converted approximately), q (keywords matched against titles, labels and the job description, so skills like "MCP" or "rust" work; each result says matched_in), function. Pages start at 0: pass next_page from the previous response; has_more=false means you have everything. Use check_job for full field-by-field evidence on one role.`;
 
 const text = (o: unknown) => ({ content: [{ type: "text" as const, text: JSON.stringify(o) }] });
 

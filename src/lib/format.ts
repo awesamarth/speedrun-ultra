@@ -37,7 +37,7 @@ export const searchShape = {
     .transform((v) => (v == null ? undefined : (Array.isArray(v) ? v : v.split(",")).map((x) => x.trim().toLowerCase().replace(/[\s-]+/g, "_")).filter((x): x is Level => (LEVELS as readonly string[]).includes(x))))
     .describe(`Keep only these board levels, comma-separated: ${LEVELS.join(", ")}. Roles with no level label are always kept. Use it to drop internships or senior roles that don't fit the user.`),
   function: z.enum(["engineering", "product"]).optional().describe("Role function."),
-  q: z.string().max(120).optional().describe("Free-text match on title/company/location/specialty, e.g. 'backend', 'ml infra', 'Stripe'."),
+  q: z.string().max(120).optional().describe("Keywords; every word must appear in the title, company, location, labels or the job description (skills/tools, e.g. 'MCP', 'rust kubernetes', 'Stripe'). Words of 4+ letters also match longer forms (kube -> kubernetes). Results say matched_in."),
   include_unclear: bool.optional().describe("Also return roles whose eligibility is unclear (missing/conflicting evidence). Default false."),
   page: z.coerce.number().int().min(0).max(500).optional().describe("Page number, starting at 0 (the first page is 0). Use next_page from the previous response."),
   limit: z.coerce.number().int().min(1).max(50).optional().describe("Page size, default 10 (max 50)."),
@@ -72,6 +72,7 @@ export function hitOut(h: Hit) {
     workplace: j.workplace,
     posted: j.published_at?.slice(0, 10) ?? null,
     pay: j.pay ? { text: j.pay.label, annual_usd: j.pay.usd_min != null || j.pay.usd_max != null ? [j.pay.usd_min, j.pay.usd_max] : null, approx: j.pay.approx, from: j.pay.source === "api" ? "board" : "job description" } : null,
+    ...(h.matched_in ? { matched_in: h.matched_in } : {}),
     level: levelOf(j.seniority),
     board_labels: { seniority: j.seniority, employment_type: j.employment_type, min_experience: j.min_exp_label },
     data_health: j.health,
@@ -85,6 +86,13 @@ export function hitOut(h: Hit) {
 /** Search response shared by the JSON API and the MCP tool. */
 export function searchOut(profile: Profile, r: Awaited<ReturnType<typeof search>>, opts: SearchOpts) {
   const warnings: string[] = [];
+  if (opts.q && r.total === 0) {
+    const any = r.counts.eligible + r.counts.not_eligible + r.counts.unclear;
+    warnings.push(any
+      ? `${any} roles match "${opts.q}" but none are in the requested verdicts for this profile (see counts_all_verdicts; pass include_unclear=true to see unclear ones).`
+      : `No role matches "${opts.q}" in its title, labels or job description with these filters. Try fewer or broader keywords, or relax show/level/min_salary.`);
+  }
+  if (opts.q && r.q_searched_description === false) warnings.push("Keyword search over job descriptions is temporarily unavailable; q matched titles and labels only.");
   if (r.hits.length === 0 && r.total > 0 && r.page > 0) {
     warnings.push(`Page ${r.page} is past the end: ${r.total} roles match and pages start at 0. Last page is ${Math.max(0, Math.ceil(r.total / r.limit) - 1)}.`);
   }

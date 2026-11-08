@@ -69,7 +69,7 @@ function ProfileForm({ sp }: { sp: Record<string, string | string[] | undefined>
       </div>
       <div className="profile-search">
         <label className="field">keywords
-          <input name="q" maxLength={120} placeholder="backend, ml, ios, company…" defaultValue={v("q")} className="field-input" />
+          <input name="q" maxLength={120} placeholder="skills or company: mcp, rust, ios, stripe…" defaultValue={v("q")} className="field-input" />
         </label>
         <div className="field">level
           <CountryMultiSelect key={v("level")} name="level" options={LEVEL_OPTIONS} placeholder="all levels" hideCodes

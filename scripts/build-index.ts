@@ -9,6 +9,7 @@ import { combine, type LlmRow } from "../src/lib/extract/combine";
 import type { Pay } from "../src/lib/types";
 import { compactFinal } from "../src/lib/compact";
 import { normalizePay } from "../src/lib/pay";
+import { searchTokens } from "../src/lib/search-terms";
 
 const ROOT = join(import.meta.dir, "..");
 const CACHE = join(ROOT, "internal", "cache");
@@ -107,11 +108,31 @@ const blobStmts: string[] = [];
 for (let i = 0, p = 0; i < b64.length; i += PART, p++) blobStmts.push(`INSERT INTO blobs (key,part,data) VALUES (${q(key)},${p},'${b64.slice(i, i + PART)}');`);
 for (let i = 0; i < blobStmts.length; i += 5) groups.push(blobStmts.slice(i, i + 5));
 console.log(`snapshot: ${snapshot.length} rows, ${(b64.length / 1e6).toFixed(2)}MB base64 in ${blobStmts.length} parts`);
+
+// keyword search over JD text: inverted index word -> delta-encoded positions in the snapshot (no JD text stored).
+// Loaded lazily by the app only when a search has q.
+const descById = new Map(live.map((j) => [j.id, j.description_text ?? ""]));
+const postings = new Map<string, number[]>();
+snapshot.forEach((row, i) => {
+  for (const t of new Set(searchTokens(descById.get(row.id as string) ?? ""))) {
+    let l = postings.get(t);
+    if (!l) postings.set(t, (l = []));
+    l.push(i);
+  }
+});
+const encoded: Record<string, string> = {};
+for (const [t, l] of postings) { let prev = -1; encoded[t] = l.map((i) => { const d = i - prev; prev = i; return d.toString(36); }).join(","); }
+const termsKey = `terms:${now}`;
+const termsB64 = Buffer.from(Bun.gzipSync(new TextEncoder().encode(JSON.stringify({ index_key: key, postings: encoded })))).toString("base64");
+const termStmts: string[] = [];
+for (let i = 0, p = 0; i < termsB64.length; i += PART, p++) termStmts.push(`INSERT INTO blobs (key,part,data) VALUES (${q(termsKey)},${p},'${termsB64.slice(i, i + PART)}');`);
+for (let i = 0; i < termStmts.length; i += 5) groups.push(termStmts.slice(i, i + 5));
+console.log(`terms: ${postings.size} words, ${(termsB64.length / 1e6).toFixed(2)}MB base64 in ${termStmts.length} parts`);
 const fetchedAt = (await Bun.file(join(CACHE, "list.json")).json()).fetched_at;
 groups.push([
   `DELETE FROM jobs WHERE updated_at <> ${q(now)};`,
-  `INSERT OR REPLACE INTO meta (key,value) VALUES ('built_at', ${q(now)}), ('source_fetched_at', ${q(fetchedAt)}), ('index_key', ${q(key)});`,
-  `DELETE FROM blobs WHERE key <> ${q(key)};`,
+  `INSERT OR REPLACE INTO meta (key,value) VALUES ('built_at', ${q(now)}), ('source_fetched_at', ${q(fetchedAt)}), ('index_key', ${q(key)}), ('terms_key', ${q(termsKey)});`,
+  `DELETE FROM blobs WHERE key NOT IN (${q(key)}, ${q(termsKey)});`,
 ]);
 console.log(`jobs: ${live.length} (llm: ${withLlm}) -> ${groups.length} batches`);
 

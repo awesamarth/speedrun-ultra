@@ -10,7 +10,7 @@ export function ResultCard({ h }: { h: ReturnType<typeof hitOut> }) {
       <div className="job-header">
         <div className="min-w-0">
           <a href={h.url} className="job-title" target="_blank" rel="noreferrer">{h.title}<span className="job-company"> · {h.company}</span><span className="job-outbound" aria-hidden="true"> ↗</span></a>
-          <div className="job-meta">{[h.level ? LEVEL_NAME[h.level] : null, h.location ?? "no location", h.workplace ?? "workplace not set", h.posted].filter(Boolean).join(" · ")}</div>
+          <div className="job-meta">{[h.level ? LEVEL_NAME[h.level] : null, h.location ?? "no location", h.workplace ?? "workplace not set", h.posted, h.matched_in === "description" ? "keyword in description" : null].filter(Boolean).join(" · ")}</div>
         </div>
         <div className="job-summary">
           {h.pay ? (

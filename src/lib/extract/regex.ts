@@ -276,7 +276,8 @@ function pay(ss: string[]): Field<Pay> {
     if (s.length > 600) continue;
     const m = s.match(re);
     if (!m) continue;
-    let lo = money(m[2], m[3]), hi = money(m[4], m[5] ?? m[3]);
+    let lo = money(m[2], m[3]);
+    const hi = money(m[4], m[5] ?? m[3]);
     if (!m[3] && m[5] && lo < 1000) lo *= 1000;
     const period: Pay["period"] = /\b(per hour|\/ ?hr|\/ ?hour|hourly|an hour)\b/i.test(s) ? "hour" : /\b(per month|\/ ?mo|monthly)\b/i.test(s) ? "month" : hi >= 10_000 ? "year" : null;
     if (period === "year" && (lo < 10_000 || hi > 5_000_000)) continue;

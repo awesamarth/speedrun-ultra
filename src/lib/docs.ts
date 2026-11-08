@@ -52,7 +52,7 @@ Data comes from the board's public API, attributed with source=speedrun-ultra. R
 - [Full docs (markdown)](${o}/docs.md)
 
 ## JSON API
-- [GET /api/jobs](${o}/api/jobs?country=IN&years=3&show=remote): search by profile. Params: country (required), authorized_in, open_to_relocation, years, citizen_of, show (remote|office|both), level (intern,new_grad,junior,mid,senior,staff,lead), min_salary (annual USD), include_no_salary, function (engineering|product), q, include_unclear, page (starts at 0; use next_page), limit (≤50)
+- [GET /api/jobs](${o}/api/jobs?country=IN&years=3&show=remote): search by profile. Params: country (required), authorized_in, open_to_relocation, years, citizen_of, show (remote|office|both), level (intern,new_grad,junior,mid,senior,staff,lead), min_salary (annual USD), include_no_salary, function (engineering|product), q (keywords; every word must appear in the title, company, location, labels or job description), include_unclear, page (starts at 0; use next_page), limit (≤50)
 - [GET /api/jobs/{id}](${o}/api/jobs/815547bf?country=IN&years=3): one job, every field with quotes. Takes an id, an 8-char prefix, or the url-encoded speedrun job url. Optional profile params add a verdict.
 - [GET /api/stats](${o}/api/stats?country=IN): index size, remote roles open to a country, visa counts, data-health counts
 `;
@@ -85,9 +85,9 @@ Missing years is not a blocker. Timezone, onsite days and pay are returned as fa
 Each field has \`value\` ("unknown" when there's no evidence), \`quotes\` (verbatim from the JD or the location field), \`source\` (regex | llm | both | api), and \`conflict: true\` when regex and LLM disagree.
 
 ## Search response
-\`profile_used\`, \`filters_used\`, \`eligible_means\`, \`counts_all_verdicts\`, \`total_matching\`, \`page\` (starts at 0), \`page_size\`, \`has_more\`, \`next_page\`, \`warnings\` (e.g. page past the end), \`results[]\`.
+\`profile_used\`, \`filters_used\`, \`eligible_means\`, \`counts_all_verdicts\`, \`total_matching\`, \`page\` (starts at 0), \`page_size\`, \`has_more\`, \`next_page\`, \`warnings\` (e.g. page past the end, or no keyword matches), \`results[]\`.
 
-Each result: \`id\` (8 chars, works with /api/jobs/{id} and check_job), \`title\`, \`company\`, \`url\` (canonical board page), \`location\`, \`workplace\`, \`posted\`, \`pay\`, \`level\` (intern | new_grad | junior | mid | senior | staff | lead | null), \`board_labels\` (seniority, employment_type, min_experience as the board publishes them), \`data_health\`, \`verdict\`, \`reasons[]\` (check, status, reason, quotes), \`facts\`, \`full_description\` (the board's own API for the full posting text; we don't re-host it).
+Each result: \`id\` (8 chars, works with /api/jobs/{id} and check_job), \`title\`, \`company\`, \`url\` (canonical board page), \`location\`, \`workplace\`, \`posted\`, \`pay\`, \`level\` (intern | new_grad | junior | mid | senior | staff | lead | null), \`board_labels\` (seniority, employment_type, min_experience as the board publishes them), \`data_health\`, \`matched_in\` (with q: title_or_labels | description), \`verdict\`, \`reasons[]\` (check, status, reason, quotes), \`facts\`, \`full_description\` (the board's own API for the full posting text; we don't re-host it).
 
 ## Data-health flags
 - \`remote_conflict\`: the board's remote flag disagrees with its workplace label. Verdicts use the location/JD evidence shown in the reasons, not the flag.
