@@ -4,6 +4,7 @@ import { COUNTRY_NAME } from "@/lib/geo";
 import { AgentPrompt } from "./agent-prompt";
 import { CopyButton } from "./copy-button";
 import { ConnectTabs } from "./connect-tabs";
+import { AgentDisclosure } from "./agent-disclosure";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -46,10 +47,7 @@ export async function Agents({ searchParams }: { searchParams: Promise<SearchPar
   const prompt = profilePrompt(sp, origin);
 
   return (
-    <details id="agents" className="agent-panel" aria-labelledby="agents-title">
-      <summary className="agent-heading">
-        <h2 id="agents-title">Use it from your agent<span>Connect your agent to check eligibility, with quotes and links.</span></h2>
-      </summary>
+    <AgentDisclosure title="Use it from your agent" subtitle="Connect your agent to check eligibility, with quotes and links.">
       <div className="agent-content">
       <div className="agent-setup">
         <div className="agent-step-heading"><h3 className="eyebrow">01 · Connect</h3><span className="agent-hint">Remote MCP</span></div>
@@ -65,6 +63,6 @@ export async function Agents({ searchParams }: { searchParams: Promise<SearchPar
         <a href="/api/stats?country=IN" target="_blank" rel="noreferrer">Index stats ↗</a>
       </div>
       </div>
-    </details>
+    </AgentDisclosure>
   );
 }
