@@ -9,6 +9,7 @@ import { LEVELS, LEVEL_NAME } from "@/lib/level";
 import { Agents } from "./_components/agents";
 import { ResultCard } from "./_components/result-card";
 import { SingleSelect } from "./_components/single-select";
+import { Disclosure } from "./_components/agent-disclosure";
 
 type SP = Promise<Record<string, string | string[] | undefined>>;
 const COUNTRIES = Object.entries(COUNTRY_NAME).sort((a, b) => a[1].localeCompare(b[1]));
@@ -23,6 +24,11 @@ export default function Page({ searchParams }: { searchParams: SP }) {
         labels roles <em>remote</em>, but not <em>remote from where</em>, and it has no visa field. Those answers are usually sitting in the job description. This
         extracts them, with quotes, for every engineering and product role, and checks them against your profile.</p>
       </div>
+      <Disclosure id="demo" className="demo-panel" defaultOpen title="Watch the 2-min demo" subtitle="What it does and why I built it.">
+        <video className="demo-video" controls preload="none" playsInline poster="/demo-poster.jpg">
+          <source src="/demo.mp4" type="video/mp4" />
+        </video>
+      </Disclosure>
       <Suspense fallback={<ProfileForm sp={{}} />}>
         <FormWithParams searchParams={searchParams} />
       </Suspense>

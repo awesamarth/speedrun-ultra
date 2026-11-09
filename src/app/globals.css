@@ -295,3 +295,5 @@ a, button { transition: background-color .15s, color .15s, border-color .15s; }
 
 .other-matches { margin-top: 28px; }
 .other-matches > .eyebrow { margin-bottom: 12px; color: #65615b; }
+.demo-panel { margin: 0 0 20px; }
+.demo-video { display: block; width: 100%; max-width: 820px; aspect-ratio: 16 / 9; margin-top: 16px; background: #000; border-radius: 8px; }
