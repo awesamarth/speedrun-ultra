@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
-/** Collapsible "Use it from your agent" panel: chevron right when closed, up when open; height + chevron animate. */
+/** Collapsible "Use it from your agent" panel: chevron right when closed, down when open; height + chevron animate. */
 export function AgentDisclosure({ title, subtitle, children }: { title: string; subtitle: string; children: ReactNode }) {
   const [open, setOpen] = useState(false);
   useEffect(() => {

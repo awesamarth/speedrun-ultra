@@ -95,9 +95,9 @@ a, button { transition: background-color .15s, color .15s, border-color .15s; }
 .agent-heading:focus-visible { outline: 2px solid #000; outline-offset: 4px; border-radius: 2px; }
 .agent-heading-text { display: block; font-size: 18px; font-weight: 650; letter-spacing: -.035em; line-height: 1.3; }
 .agent-heading-text span { display: block; color: #65615b; font-size: 12px; font-weight: 400; letter-spacing: normal; line-height: 1.5; margin-top: 4px; }
-/* chevron: right when closed, up when open */
+/* chevron: right when closed, down when open */
 .agent-chevron { width: 8px; height: 8px; margin-right: 6px; flex-shrink: 0; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform .22s ease; }
-.agent-panel[data-open] .agent-chevron { transform: rotate(-135deg); }
+.agent-panel[data-open] .agent-chevron { transform: rotate(45deg); }
 /* height animation via grid rows 0fr -> 1fr */
 .agent-collapse { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows .26s ease, opacity .2s ease; }
 .agent-panel[data-open] .agent-collapse { grid-template-rows: 1fr; opacity: 1; }
