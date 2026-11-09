@@ -26,7 +26,7 @@ export default function Page({ searchParams }: { searchParams: SP }) {
       </div>
       <Disclosure id="demo" className="demo-panel" defaultOpen title="Watch the 2-min demo" subtitle="What it does and why I built it.">
         <video className="demo-video" controls preload="none" playsInline poster="/demo-poster.jpg">
-          <source src="/demo.mp4" type="video/mp4" />
+          <source src="/video/demo.mp4" type="video/mp4" />
         </video>
       </Disclosure>
       <Suspense fallback={<ProfileForm sp={{}} />}>
